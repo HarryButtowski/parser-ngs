@@ -2,6 +2,8 @@
 
 namespace app\models;
 
+use app\components\HandlerOfDataOfPromotion;
+use app\components\parser\NgsProvider;
 use Yii;
 
 /**
@@ -9,8 +11,9 @@ use Yii;
  *
  * @property integer $id
  * @property integer $section_id
- * @property string $title
- * @property string $description
+ * @property string  $promotion_id
+ * @property string  $title
+ * @property string  $description
  *
  * @property Section $section
  */
@@ -25,6 +28,23 @@ class Promotion extends \yii\db\ActiveRecord
     }
 
     /**
+     * @param string $section
+     */
+    public static function parse($section = null)
+    {
+        Yii::$app->parser->parseData(new NgsProvider(), new HandlerOfDataOfPromotion(), [
+            'section' => Section::findOne($section)->name,
+        ]);
+    }
+
+    public static function getModel($condition)
+    {
+        $model = static::findOne($condition);
+
+        return $model ?: new static();
+    }
+
+    /**
      * @inheritdoc
      */
     public function rules()
@@ -32,7 +52,7 @@ class Promotion extends \yii\db\ActiveRecord
         return [
             [['section_id'], 'integer'],
             [['description'], 'string'],
-            [['title'], 'string', 'max' => 255],
+            [['title', 'promotion_id'], 'string', 'max' => 255],
             [['section_id'], 'exist', 'skipOnError' => true, 'targetClass' => Section::className(), 'targetAttribute' => ['section_id' => 'id']],
         ];
     }
@@ -43,9 +63,9 @@ class Promotion extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => 'ID',
-            'section_id' => 'Section ID',
-            'title' => 'Title',
+            'id'          => 'ID',
+            'section_id'  => 'Section ID',
+            'title'       => 'Title',
             'description' => 'Description',
         ];
     }

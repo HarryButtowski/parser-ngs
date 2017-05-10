@@ -5,12 +5,12 @@ namespace app\models;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\models\Promotion;
+use app\models\Section;
 
 /**
- * PromotionSearch represents the model behind the search form about `app\models\Promotion`.
+ * SectionSearch represents the model behind the search form about `app\models\Section`.
  */
-class PromotionSearch extends Promotion
+class SectionSearch extends Section
 {
     /**
      * @inheritdoc
@@ -18,8 +18,8 @@ class PromotionSearch extends Promotion
     public function rules()
     {
         return [
-            [['id', 'section_id'], 'integer'],
-            [['title', 'description', 'promotion_id'], 'safe'],
+            [['id'], 'integer'],
+            [['name'], 'safe'],
         ];
     }
 
@@ -41,7 +41,7 @@ class PromotionSearch extends Promotion
      */
     public function search($params)
     {
-        $query = Promotion::find();
+        $query = Section::find();
 
         // add conditions that should always apply here
 
@@ -60,11 +60,9 @@ class PromotionSearch extends Promotion
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'section_id' => $this->section_id,
         ]);
 
-        $query->andFilterWhere(['like', 'title', $this->title])
-            ->andFilterWhere(['like', 'description', $this->description]);
+        $query->andFilterWhere(['like', 'name', $this->name]);
 
         return $dataProvider;
     }
